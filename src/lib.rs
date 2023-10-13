@@ -8,7 +8,7 @@ use std::str;
 use std::str::FromStr;
 
 use anyhow::Result;
-use log::{error, info};
+use log::{debug, error, info};
 use pamsm::{Pam, PamError, PamFlags, PamLibExt, PamServiceModule};
 
 struct PamLoadKeys;
@@ -21,7 +21,7 @@ impl PamServiceModule for PamLoadKeys {
             Ok(Some(user)) => {
                 let output = run_bw(user, "status").unwrap();
 
-                info!("bw status: {}", str::from_utf8(output.stdout.as_slice()).unwrap());
+                debug!("bw status: {}", str::from_utf8(output.stdout.as_slice()).unwrap());
 
                 info!("Hello, {:?}!", user);
             }
@@ -66,18 +66,20 @@ fn run_bw(user: &CStr, cmd: &str) -> Result<Output> {
 }
 
 fn init_logging(args: &Vec<String>) {
-    let level = if args.len() > 1 {
-        args[1].as_str()
+    let level = if args.len() > 0 {
+        args[0].as_str()
     } else {
         "warn"
     };
     env_logger::builder()
         .filter_level(log::LevelFilter::from_str(level).unwrap_or(log::LevelFilter::Warn))
+        .parse_default_env()
         .format(|buf, record| {
             let ts = buf.timestamp();
             writeln!(buf, "pam_bitwarden: {}: {}: {}", ts, record.level(), record.args())
         })
         .init();
+    info!("Logging initialized");
 }
 
 pam_module!(PamLoadKeys);
