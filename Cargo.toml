@@ -13,3 +13,5 @@ anyhow = "1.0.75"
 env_logger = "0.10.0"
 pamsm = { version = "0.5.3", features = ["libpam"] }
 log = "0.4.20"
+serde_json = "1.0.107"
+serde = { version = "1.0.189", features = ["derive"] }
