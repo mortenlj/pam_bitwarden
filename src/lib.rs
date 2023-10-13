@@ -8,7 +8,7 @@ use std::str;
 use std::str::FromStr;
 
 use anyhow::Result;
-use log::{debug, error, info};
+use log::{debug, error};
 use pamsm::{Pam, PamError, PamFlags, PamLibExt, PamServiceModule};
 use serde::Deserialize;
 
@@ -76,8 +76,22 @@ impl PamServiceModule for PamLoadKeys {
 
     fn close_session(pam: Pam, _flags: PamFlags, args: Vec<String>) -> PamError {
         init_logging(&args);
-        let user = pam.get_user(None).unwrap();
-        info!("Goodbye, {:?}!", user);
+        match pam.get_user(None) {
+            Ok(Some(user)) => {
+                if let Err(e) = run_bw(user, vec!["lock"], None) {
+                    error!("Failed to lock vault: {:?}", e);
+                    return PamError::SYSTEM_ERR;
+                }
+            }
+            Ok(None) => {
+                error!("ERROR: get_user returned None, should not happen!");
+                return PamError::SYSTEM_ERR;
+            }
+            Err(e) => {
+                error!("ERROR: get_user returned error: {:?}", e);
+                return e;
+            }
+        }
         PamError::SUCCESS
     }
 }
