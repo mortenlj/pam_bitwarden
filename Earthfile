@@ -9,24 +9,20 @@ WORKDIR /code
 
 chef-planner:
     FROM lib-targets+common-build-setup
+    RUN apt-get --yes install libpam0g libpam0g-dev
 
     DO lib-commands+CHEF_PREPARE
     SAVE ARTIFACT recipe.json
 
-build-target:
+build:
     FROM lib-targets+prepare-tier1
+    RUN apt-get --yes install libpam0g libpam0g-dev
 
     COPY +chef-planner/recipe.json recipe.json
 
-    ARG target
-    DO lib-commands+BUILD --target ${target}
+    DO lib-commands+BUILD --target x86_64-unknown-linux-gnu
 
     ARG version=unknown
-    SAVE ARTIFACT --if-exists target/${target}/release/libpam_bitwarden.so AS LOCAL target/libpam_bitwarden.so.${version}.${target}
+    SAVE ARTIFACT target/x86_64-unknown-linux-gnu/release/libpam_bitwarden.so AS LOCAL target/libpam_bitwarden.${version}.so
 
-    SAVE IMAGE --push ghcr.io/mortenlj/pam_bitwarden/cache:build-${target}
-
-build:
-    FOR target IN x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
-        BUILD +build-target --target=${target}
-    END
+    SAVE IMAGE --push ghcr.io/mortenlj/pam_bitwarden/cache:build
