@@ -1,0 +1,48 @@
+name: Release
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on: issue_comment
+
+jobs:
+  release:
+    if: contains(github.event.comment.body, '/approve-release') && github.event.comment.author_association == 'OWNER'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get release candidate
+        id: get_data
+        uses: ./.github/actions/get_data
+
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: main.yaml
+          run_id: ${{ steps.get_data.outputs.run_id }}
+          name: executables-.*
+          name_is_regexp: true
+          path: ./executables/
+
+      - name: create release
+        id: create_release
+        uses: softprops/action-gh-release@v2.0.8
+        with:
+          tag_name: ${{ steps.get_data.outputs.version }}
+          name: Release ${{ steps.get_data.outputs.version }}
+          draft: false
+          prerelease: false
+          files: ./executables/*/*
+
+      - uses: lee-dohm/close-matching-issues@v2
+        if: success()
+        with:
+          query: 'label:release-candidate'
+          token: ${{ secrets.GITHUB_TOKEN }}

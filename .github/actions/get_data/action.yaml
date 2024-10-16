@@ -1,0 +1,15 @@
+# every action has a name
+name: Get Release Data
+# description
+description: This action gets required release data from the first comment on the issue, when triggered by issue_comment
+
+outputs:
+  version:
+    description: The version of the release
+  run_id:
+    description: The run ID to get the release artifacts from
+
+# definition how we want our action
+runs:
+  using: docker # we are saying this action will run on docker
+  image: 'Dockerfile' # we will use our own Dockerfile to build an image and run it.
