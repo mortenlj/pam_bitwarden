@@ -27,7 +27,7 @@ jobs:
         with:
           workflow: main.yaml
           run_id: ${{ steps.get_data.outputs.run_id }}
-          name: executables-.*
+          name: executable
           name_is_regexp: true
           path: ./executables/
 
