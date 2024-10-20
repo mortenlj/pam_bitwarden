@@ -22,7 +22,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
       - name: "Set version"
         id: constants
         run: |
@@ -45,9 +45,9 @@ jobs:
       - uses: earthly/actions-setup@v1
         with:
           version: "latest"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
       - name: Login to GitHub Packages Docker Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -63,7 +63,7 @@ jobs:
         run: |
           earthly +build "--version=${version}"
       - name: Save executables for release
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4
         with:
           name: executable
           path: target/libpam_bitwarden.*
@@ -77,12 +77,12 @@ jobs:
     permissions:
       issues: write
     steps:
-      - uses: lee-dohm/close-matching-issues@v2
+      - uses: lee-dohm/close-matching-issues@e9e43aad2fa6f06a058cedfd8fb975fd93b56d8f # v2
         with:
           query: 'label:release-candidate'
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: dacbd/create-issue-action@v2.0.0
+      - uses: dacbd/create-issue-action@cdb57ab6ff8862aa09fee2be6ba77a59581921c2 # v2.0.0
         name: Create Release candidate issue
         with:
           token: ${{secrets.GITHUB_TOKEN}}
