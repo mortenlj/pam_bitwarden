@@ -23,7 +23,7 @@ jobs:
         uses: ./.github/actions/get_data
 
       - name: Download artifact
-        uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11 # v6
+        uses: dawidd6/action-download-artifact@20319c5641d495c8a52e688b7dc5fada6c3a9fbc # v8
         with:
           workflow: main.yaml
           run_id: ${{ steps.get_data.outputs.run_id }}
