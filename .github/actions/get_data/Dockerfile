@@ -1,5 +1,5 @@
 # action will be run in python3 container
-FROM python:3@sha256:e3a6ccbe44d9cbfa4f107f238a0e95fa70e0d084e87689222e951d062ac89854
+FROM python:3@sha256:671d8548cfc6ec789cbdd74c8585bd614864d1005970167350a2586be8db5650
 # copying requirements.txt and install the action dependencies
 COPY requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
