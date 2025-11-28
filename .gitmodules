@@ -1,0 +1,3 @@
+[submodule ".config/mise-lib"]
+	path = .config/mise-lib
+	url = git@github.com:mortenlj/mise-lib.git
