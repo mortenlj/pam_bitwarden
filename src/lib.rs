@@ -17,7 +17,7 @@ struct PamLoadKeys;
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct BitwardenStatusOutput {
-    status: String
+    status: String,
 }
 
 impl PamServiceModule for PamLoadKeys {
@@ -28,9 +28,13 @@ impl PamServiceModule for PamLoadKeys {
             Ok(Some(user)) => {
                 let output = run_bw(user, vec!["status"], None).unwrap();
 
-                debug!("bw status: {}", str::from_utf8(output.stdout.as_slice()).unwrap());
+                debug!(
+                    "bw status: {}",
+                    str::from_utf8(output.stdout.as_slice()).unwrap()
+                );
 
-                let status: BitwardenStatusOutput = serde_json::from_slice(output.stdout.as_slice()).unwrap();
+                let status: BitwardenStatusOutput =
+                    serde_json::from_slice(output.stdout.as_slice()).unwrap();
 
                 if status.status == "locked" {
                     debug!("Attempting unlock ...");
@@ -42,7 +46,9 @@ impl PamServiceModule for PamLoadKeys {
                                 match str::from_utf8(session_output.stdout.as_slice()) {
                                     Ok(session_id) => {
                                         debug!("Setting BW_SESSION={}", session_id);
-                                        if let Err(_) = pam.putenv(format!("BW_SESSION={}", session_id).as_str()) {
+                                        if let Err(_) = pam
+                                            .putenv(format!("BW_SESSION={}", session_id).as_str())
+                                        {
                                             error!("Failed to set BW_SESSION environment variable");
                                             return PamError::SYSTEM_ERR;
                                         }
@@ -140,7 +146,13 @@ fn init_logging(args: &Vec<String>) {
         .parse_default_env()
         .format(|buf, record| {
             let ts = buf.timestamp();
-            writeln!(buf, "pam_bitwarden: {}: {}: {}", ts, record.level(), record.args())
+            writeln!(
+                buf,
+                "pam_bitwarden: {}: {}: {}",
+                ts,
+                record.level(),
+                record.args()
+            )
         })
         .init();
     debug!("Logging initialized");
