@@ -1,2 +1,38 @@
 [task_config]
 includes = [".config/mise-lib/virtual_tasks.toml", ".config/mise-lib"]
+
+[tasks.test]
+depends = ["rust:test"]
+description = "Run tests"
+
+[tasks.fmt]
+depends = ["rust:fmt"]
+description = "Format source"
+
+[tasks.fmt-check]
+depends = ["rust:fmt-check"]
+description = "Check formatting"
+
+[tasks.lint]
+depends = ["rust:lint"]
+description = "Lint the project"
+
+[tasks.lint-fix]
+depends = ["rust:lint-fix"]
+description = "Run lint fixers"
+
+[tasks.ci]
+depends = ["test", "fmt-check", "lint"]
+description = "Run CI tasks"
+
+[tasks.build]
+depends = ["rust:build"]
+description = "Build the project in debug mode"
+sources = ["src/**/*.rs", "Cargo.lock", "Cargo.toml"]
+outputs = ["target/debug/pam_bitwarden"]
+
+[tasks.release-build]
+depends = ["rust:build-target --release x86_64-unknown-linux-gnu"]
+description = "Build the project"
+sources = ["src/**/*.rs", "Cargo.lock", "Cargo.toml"]
+outputs = ["target/release/pam_bitwarden.*.x86_64-unknown-linux-gnu"]
