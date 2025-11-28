@@ -1,0 +1,102 @@
+name: pam_bitwarden
+
+on:
+  push:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        with:
+          fetch-depth: 0
+          submodules: "true"
+      - uses: jdx/mise-action@d16887ba50704baed7de72bd1e82e04391e4457a # v3
+      - run: mise run extract-ci-info
+        id: ci-info
+    outputs:
+      ci-tasks: ${{ steps.ci-info.outputs.ci-tasks }}
+      run-publish: ${{ steps.ci-info.outputs.run-publish }}
+      artifacts: ${{ steps.ci-info.outputs.artifacts }}
+      version: ${{ steps.ci-info.outputs.version }}
+      clean-version: ${{ steps.ci-info.outputs.clean-version }}
+      release-build-tasks: ${{ steps.ci-info.outputs.release-build-tasks }}
+
+  ci:
+    runs-on: ubuntu-latest
+    needs:
+      - setup
+    strategy:
+      matrix:
+        task: ${{ fromJSON(needs.setup.outputs.ci-tasks) }}
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        with:
+          fetch-depth: 0
+          submodules: "true"
+      - uses: moonrepo/setup-rust@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: jdx/mise-action@d16887ba50704baed7de72bd1e82e04391e4457a # v3
+      - run: mise run ${{ matrix.task.cmd }}
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - setup
+      - ci
+    strategy:
+      matrix:
+        task: ${{ fromJSON(needs.setup.outputs.release-build-tasks) }}
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
+        with:
+          fetch-depth: 0
+          submodules: "true"
+      - uses: jdx/mise-action@d16887ba50704baed7de72bd1e82e04391e4457a # v3
+      - uses: moonrepo/setup-rust@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: mise run ${{ matrix.task.cmd }}
+        env:
+          version: ${{ fromJSON(needs.setup.outputs.version) }}
+      - name: List contents of target/release
+        run: ls -la target/release
+      - name: Save artifacts for release
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: artifacts-${{ matrix.task.name }}
+          path: |
+            ${{ fromJSON(needs.setup.outputs.artifacts) }}
+          if-no-files-found: error
+
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      id-token: write
+    needs:
+      - setup
+      - build
+    if: ${{ fromJSON(needs.setup.outputs.run-publish) }}
+    steps:
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v6.0.0
+        with:
+          merge-multiple: true
+          path: artifacts/
+
+      - name: Create release
+        id: create_release
+        uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe # v2.4.2
+        with:
+          tag_name: ${{ fromJSON(needs.setup.outputs.clean-version) }}
+          name: Release ${{ fromJSON(needs.setup.outputs.version) }}
+          draft: false
+          prerelease: false
+          files: artifacts/*
