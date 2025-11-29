@@ -1,6 +1,13 @@
 [task_config]
 includes = [".config/mise-lib/virtual_tasks.toml", ".config/mise-lib"]
 
+[tasks.docker-prepare]
+description = "Prepare the docker image"
+run = """
+    apt-get --yes update
+    apt-get --yes install libpam0g libpam0g-dev
+"""
+
 [tasks.test]
 depends = ["rust:test"]
 description = "Run tests"
