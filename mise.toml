@@ -29,10 +29,10 @@ description = "Run CI tasks"
 depends = ["rust:build"]
 description = "Build the project in debug mode"
 sources = ["src/**/*.rs", "Cargo.lock", "Cargo.toml"]
-outputs = ["target/debug/pam_bitwarden"]
+outputs = ["target/debug/libpam_bitwarden.so"]
 
 [tasks.release-build]
 depends = ["rust:build-target --release x86_64-unknown-linux-gnu"]
 description = "Build the project"
 sources = ["src/**/*.rs", "Cargo.lock", "Cargo.toml"]
-outputs = ["target/release/pam_bitwarden.*.x86_64-unknown-linux-gnu"]
+outputs = ["target/release/libpam_bitwarden.*.x86_64-unknown-linux-gnu.so"]
