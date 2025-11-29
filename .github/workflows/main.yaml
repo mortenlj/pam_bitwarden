@@ -38,11 +38,8 @@ jobs:
         with:
           fetch-depth: 0
           submodules: "true"
-      - uses: moonrepo/setup-rust@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: jdx/mise-action@d16887ba50704baed7de72bd1e82e04391e4457a # v3
-      - run: mise run ${{ matrix.task.cmd }}
+      - run: mise run docker:run-task ${{ matrix.task.cmd }}
 
   build:
     runs-on: ubuntu-latest
