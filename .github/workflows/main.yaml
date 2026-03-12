@@ -60,7 +60,7 @@ jobs:
           MORTENLJ_MISE_LIB_VERSION: ${{ fromJSON(needs.setup.outputs.version) }}
           MORTENLJ_MISE_LIB_CLEAN_VERSION: ${{ fromJSON(needs.setup.outputs.clean-version) }}
       - name: Save artifacts for release
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: artifacts-${{ matrix.task.name }}
           path: |
