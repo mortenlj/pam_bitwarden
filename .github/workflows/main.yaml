@@ -86,7 +86,7 @@ jobs:
 
       - name: Create release
         id: create_release
-        uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe # v2.4.2
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3
         with:
           tag_name: ${{ fromJSON(needs.setup.outputs.clean-version) }}
           name: Release ${{ fromJSON(needs.setup.outputs.version) }}
