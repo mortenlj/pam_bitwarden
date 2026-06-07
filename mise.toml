@@ -1,5 +1,5 @@
 [task_config]
-includes = [".config/mise-lib/virtual_tasks.toml", ".config/mise-lib"]
+includes = [".config/mise-lib/virtual_tasks.toml", ".config/mise-lib/tasks"]
 
 [tasks.docker-prepare]
 description = "Prepare the docker image"
