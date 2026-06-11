@@ -37,7 +37,7 @@ depends = ["test", "fmt-check", "lint"]
 description = "Run CI tasks"
 
 [tasks.build]
-depends = ["rust:build"]
+depends = ["rust:build-target x86_64-unknown-linux-gnu"]
 description = "Build the project in debug mode"
 sources = ["src/**/*.rs", "Cargo.lock", "Cargo.toml"]
 outputs = ["target/debug/libpam_bitwarden.so"]
