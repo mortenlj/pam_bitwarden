@@ -1,3 +1,6 @@
+[env]
+RUSTFLAGS = "-L /usr/lib/x86_64-linux-gnu"
+
 [task_config]
 includes = [".config/mise-lib/virtual_tasks.toml", ".config/mise-lib/tasks"]
 
